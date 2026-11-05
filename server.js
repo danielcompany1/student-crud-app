@@ -99,4 +99,10 @@ async function start() {
   process.once('SIGTERM', shutdown);
 }
 
-start();
+// Vercel can import this Express app as a function. Keep the database startup
+// check and local listener for direct `node server.js` use only.
+module.exports = app;
+
+if (require.main === module) {
+  start();
+}
