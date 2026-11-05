@@ -1,0 +1,21 @@
+{
+  "name": "student-crud-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A local-only student records CRUD app built with Express and MySQL.",
+  "main": "server.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "mysql2": "^3.14.0"
+  }
+}
