@@ -17,6 +17,9 @@ if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
 }
 
 app.disable('x-powered-by');
+// Vercel terminates traffic at its proxy and supplies the forwarded client IP.
+// Trust only the first proxy hop so rate limiting can distinguish callers.
+if (process.env.VERCEL) app.set('trust proxy', 1);
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 
@@ -51,6 +54,17 @@ app.use((req, res) => {
 // Keep internal error details in the server console; never send them to the browser.
 app.use((error, req, res, next) => {
   if (res.headersSent) return next(error);
+
+  if (error.code === 'MISSING_DB_SETTINGS' || error.code === 'INVALID_DB_SETTINGS') {
+    console.error('Student records database is not configured for this deployment.', error.code);
+    return res.status(503).json({
+      success: false,
+      error: {
+        code: 'DATABASE_NOT_CONFIGURED',
+        message: 'Student records are unavailable until this deployment is connected to a database.'
+      }
+    });
+  }
 
   if (error.type === 'entity.too.large') {
     return res.status(413).json({
